@@ -1,0 +1,281 @@
+HTMLcard = 
+VAR cao_e_gato = 
+    VAR calculo = 
+        CALCULATE(
+            DISTINCTCOUNT('procedentes (2)'[numero_processo]),
+            'procedentes (2)'[tipo_animal] IN {"Caninos", "Felinos", "Animais de estimação"}
+        )
+    VAR animais = DISTINCTCOUNT('procedentes (2)'[numero_processo])
+    RETURN 
+        DIVIDE(calculo, animais, 0)
+
+VAR pep_fiscalizacao = 
+    VAR Fiscalizacao = 
+        CALCULATE(
+            DISTINCTCOUNT('procedentes (2)'[numero_processo]),
+            'procedentes (2)'[denunciante] = "De Ofício"
+        )
+    VAR DENUNCIAS = CALCULATE(DISTINCTCOUNT('procedentes (2)'[numero_processo]))
+    RETURN 
+        DIVIDE(Fiscalizacao, DENUNCIAS, 0)
+
+VAR documentos_elaborados =
+    VAR documentos_elaborados = 
+        CALCULATE(
+            COUNT('procedentes (2)'[documento_elaborado]),
+            'procedentes (2)'[documento_elaborado] IN {
+                "Termo de anestesia ou sedação",
+                "Termo de Autorização assinado pelo tutor",
+                "Termo de autorização de eutanásia",
+                "Termo de autorização do tutor",
+                "Termo de autorização para cirurgia",
+                "Termo de autorização para procedimento cirúrgico",
+                "Termo de Consentimento Informado",
+                "Autorização para cirurgia",
+                "Autorização para eutanásia",
+                "Autorização para internação",
+                "Autorização para pós conduta cirúrgica",
+                "Autorização para sedação e anestesia",
+                "Autorização para transfusão sanguínea",
+                "Autorização para utilização de hormônio"
+            }
+        )
+    RETURN 
+        DIVIDE(documentos_elaborados, COUNT('procedentes (2)'[Column1]), 0)
+
+RETURN
+"<!DOCTYPE html>
+<html lang='pt-BR'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Cards Interativos</title>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css'>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: #f1f1f1; 
+            display: flex;
+            justify-content: center;
+            align-items: center;   
+            font-family: sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            padding: 10px;
+        }
+
+        .container .card {
+            position: relative;
+            width: calc(33.33% - 20px); /* Largura responsiva: 33.33% para três cards em linha */
+            height: auto; /* Altura automática para se ajustar ao conteúdo */
+            min-height: 200px; /* Altura mínima para garantir que o card tenha um tamanho razoável */
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+        }
+
+        @media (max-width: 768px) {
+            .container .card {
+                width: calc(50% - 20px); /* Largura responsiva: 50% para dois cards em linha */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container .card {
+                width: calc(100% - 20px); /* Largura responsiva: 100% para um card em linha */
+            }
+        }
+
+        .container .card:hover {
+            transform: scale(1.05);
+        }
+
+        .container .card .icon {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: 0.7s;
+            z-index: 1;
+            display: flex;
+            align-items: flex-start; /* Alinhamento vertical (flex-start para o topo) */
+            justify-content: center; /* Alinhamento horizontal */
+            padding-top: 20px; /* Adiciona espaço acima do ícone */
+        }
+
+        .container .card:nth-child(1) .icon {
+            background: #62BE3B;
+        }
+
+        .container .card:nth-child(2) .icon {
+            background: #4697C6;
+        }
+
+        .container .card:nth-child(3) .icon {
+            background: #52607B;
+        }
+
+        .container .card .icon .fa {
+            font-size: 50px;
+            color: #fff;
+            margin-right: 10px; /* Espaço entre ícone e texto */
+        }
+
+        .container .card .face {
+            width: 100%;
+            height: 100%;
+            transition: 0.5s;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .container .card .face.face1 {
+            background: rgba(255, 255, 255, 0); /* Totalmente transparente */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        .container .card .face.face1 span {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .container .card .face.face2 {
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            opacity: 0;
+            z-index: 2;
+        }
+
+        .container .card:hover .face.face1 {
+            opacity: 0;
+        }
+
+        .container .card:hover .face.face2 {
+            opacity: 1;
+        }
+
+        .measure-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #414141;
+        }
+
+        .container a {
+            text-decoration: none;
+            color: #414141;
+        }
+
+        .button {
+            background-color: transparent;
+            border: 1px solid #414141;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .button:hover {
+            background-color: rgba(65, 65, 65, 0.1);
+            color: #414141;
+        }
+
+        @media (max-width: 768px) {
+            .container .card {
+                width: calc(50% - 20px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container .card {
+                width: calc(100% - 20px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <!-- PRIMEIRO CARD - Cão e Gato -->
+        <div class='card'>
+            <div class='icon'>
+                <i class='fas fa-paw'></i>
+            </div>
+            <div class='face face1'>
+                <div class='content'>
+                    <h3>Cão e Gato</h3>
+                    <button class='button'>Detalhes</button> <!-- Botão adicionado -->
+                </div>
+            </div>
+            <div class='face face2'>
+                <div class='content'>
+                    <p>Percentual de processos éticos relacionados a animais de companhia.</p>
+                    <h2><span class='measure-value'>" & FORMAT(cao_e_gato, "0.00%") & "</span></h2> <!-- Valor calculado -->
+                    <button class='button'>Mais Info</button> <!-- Botão adicionado -->
+                </div>
+            </div>
+        </div>
+
+        <!-- SEGUNDO CARD - Documentos Elaborados -->
+        <div class='card'>
+            <div class='icon'>
+                <i class='fas fa-file-alt'></i>
+            </div>
+            <div class='face face1'>
+                <div class='content'>
+                    <h3>Documentos Elaborados</h3>
+                    <button class='button'>Detalhes
+                        <img src="" alt="" srcset="">
+                    </button> <!-- Botão adicionado -->
+                </div>
+            </div>
+            <div class='face face2'>
+                <div class='content'>
+                    <p>Percentual de casos onde o veterinário elabora algum documento para se resguardar.</p>
+                    <h2><span class='measure-value'>" & FORMAT(documentos_elaborados, "0.00%") & "</span></h2> <!-- Valor calculado -->
+                    <button class='button'>Mais Info</button> <!-- Botão adicionado -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TERCEIRO CARD - PEP Fiscalização -->
+        <div class='card'>
+            <div class='icon'>
+                <i class='fas fa-search'></i>
+            </div>
+            <div class='face face1'>
+                <div class='content'>
+                    <h3>PEP Fiscalização</h3>
+                    <button class='button'>Detalhes</button> <!-- Botão adicionado -->
+                </div>
+            </div>
+            <div class='face face2'>
+                <div class='content'>
+                    <p>Percentual de PEP oriundos da Fiscalização.</p>
+                    <h2><span class='measure-value'>" & FORMAT(pep_fiscalizacao, "0.00%") & "</span></h2> <!-- Valor calculado -->
+                    <button class='button'>Mais Info</button> <!-- Botão adicionado -->
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>"
